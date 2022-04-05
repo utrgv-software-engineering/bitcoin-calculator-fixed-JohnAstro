@@ -1,8 +1,16 @@
+import 'package:bitcoin_calculator/utils/conversion_tools.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('2 plus 2 is 4', () {
-    int result = 2 + 2;
-    expect(result, 4);
+  group("Happy path", () {
+    test("usd_to_btc should return proper calculation", () {
+      var testConversion = ConversionTools.usd_to_btc('45987.90');
+      expect(testConversion, 1.0);
+    });
+
+    test("btc_to_usd should return proper calculation", () {
+      var testConversion = ConversionTools.btc_to_usd('1');
+      expect(testConversion, 45987.90);
+    });
   });
 }
