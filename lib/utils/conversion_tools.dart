@@ -7,11 +7,11 @@ class ConversionTools {
     return result;
   }
 
-  static double btc_to_usd(String usd) {
-    double usdnum = double.parse(usd);
-    double btc = 45987.90;
+  static double btc_to_usd(String btc) {
+    double btcnum = double.parse(btc);
+    double usd = 45987.90;
 
-    double result = btc / usdnum;
+    double result = usd / btcnum;
     return result;
   }
 }
