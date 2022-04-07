@@ -2,37 +2,110 @@ import 'package:bitcoin_calculator/screens/result.dart';
 import 'package:flutter/material.dart';
 import 'package:bitcoin_calculator/utils/conversion_tools.dart';
 
-class Input extends StatelessWidget {
-  final bool usd_to_btc;
-  Input(this.usd_to_btc, {Key key}) : super(key: key);
+class Input extends StatefulWidget {
+  final bool usdToBtc;
+  Input(this.usdToBtc, {Key key}) : super(key: key);
 
+  @override
+  State<Input> createState() => _InputState();
+}
+
+class _InputState extends State<Input> {
   final money = TextEditingController();
+  bool validate = false;
+  double result;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(
+          'Bitcoin Calculator',
+          style: TextStyle(fontSize: 24),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+            key: Key('back-button1'),
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_ios)),
+        backgroundColor: Colors.blueGrey,
+        foregroundColor: Colors.white,
+      ),
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TextField(
-            controller: money,
+          widget.usdToBtc
+              ? Text(
+                  "Enter USD to convert to BTC",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                )
+              : Text("Enter BTC to convert to USD",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(25, 10, 25, 10),
+            child: TextField(
+              key: Key('input-text-field'),
+              controller: money,
+              decoration: InputDecoration(
+                  labelText: "Enter Value",
+                  labelStyle: TextStyle(
+                      color: validate ? Colors.red[700] : Colors.blueGrey),
+                  errorText: validate ? "Invalid Input" : null,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.blueGrey, width: 3)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.blueGrey, width: 2)),
+                  focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: Colors.blueGrey))),
+            ),
           ),
-          ElevatedButton(
-              onPressed: () {
-                double result;
-                if (usd_to_btc == true) {
-                  result = ConversionTools.usd_to_btc(money.text);
-                } else {
-                  result = ConversionTools.btc_to_usd(money.text);
-                }
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => Result(result, usd_to_btc))));
-              },
-              child: Text('Continue'))
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                key: Key('continue-button'),
+                style: ElevatedButton.styleFrom(
+                    primary: Colors.blueGrey,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25))),
+                onPressed: () {
+                  setState(() {
+                    validate = ConversionTools.checkInvalidInput(money.text);
+                    if (!validate) {
+                      if (widget.usdToBtc) {
+                        result = ConversionTools.usd_to_btc(money.text);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Result(
+                                    money.text, result, widget.usdToBtc)));
+                      } else {
+                        result = ConversionTools.btc_to_usd(money.text);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Result(
+                                    money.text, result, widget.usdToBtc)));
+                      }
+                    }
+                  });
+                },
+                child: Ink(
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(25)),
+                    child: Container(
+                        height: 50,
+                        width: 200,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Continue",
+                          style: TextStyle(fontSize: 16),
+                        )))),
+          )
         ],
       )),
     );
