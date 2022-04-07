@@ -13,4 +13,11 @@ void main() {
       expect(testConversion, 45987.90);
     });
   });
+
+  group("Sad path", () {
+    test("usd_to_btc should return ArgumentError on empty string", () {
+      var testConversion = ConversionTools.usd_to_btc('');
+      expect(testConversion, ArgumentError());
+    });
+  });
 }
