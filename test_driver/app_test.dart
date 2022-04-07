@@ -102,10 +102,9 @@ void main() {
       driver.tap(continueButtonFinder);
 
       // I should see the correct calculation
-      final resultTextFinder =
-          find.text('1.5 BTC is equal to 30658.600000000002 USD');
+      final resultTextFinder = find.text('1.5 BTC is equal to 68981.85 USD');
       expect(await driver.getText(resultTextFinder),
-          '1.5 BTC is equal to 30658.600000000002 USD');
+          '1.5 BTC is equal to 68981.85 USD');
 
       // Find and tap the done button and expect to be
       // in the choose conversion screen
