@@ -17,7 +17,7 @@ void main() {
         "btc_to_usd should return proper calculation with decimal input without leading digit",
         () {
       var testConversion = ConversionTools.btc_to_usd('.1');
-      expect(testConversion, 459879);
+      expect(testConversion, 4598.79);
     });
   });
 
