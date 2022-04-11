@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class CurrentBTCInUSD {
   final double rateFloat;
 
