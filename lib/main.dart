@@ -1,7 +1,6 @@
 import 'package:bitcoin_calculator/screens/choose_conversion.dart';
 import 'package:flutter/material.dart';
 
-
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -13,5 +12,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

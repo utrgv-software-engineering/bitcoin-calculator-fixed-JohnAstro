@@ -1,65 +1,165 @@
 import 'package:bitcoin_calculator/utils/conversion_tools.dart';
+import 'package:bitcoin_calculator/utils/current_bitcoin_rate.dart';
 import 'package:test/test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:http/http.dart' as http;
+import 'package:bitcoin_calculator/utils/bitcoin_api.dart';
+
+// Create a MockClient using the Mock class provided by the Mockito package.
+// Create new instances of this class in each test.
+class MockClient extends Mock implements http.Client {}
 
 void main() {
+  final client = MockClient();
+  final fakeBitcoinAPIData =
+      '{"time": {"updated": "Nov 5, 2020 19:01:00 UTC", "updatedISO": "2020-11-05T19:01:00+00:00", "updateduk": "Nov 5, 2020 at 19:01 GMT"}, "disclaimer": "This data was produced from the CoinDesk Bitcoin Price Index (USD). Non-USD currency data converted using hourly conversion rate from openexchangerates.org", "bpi": { "USD": { "code": "USD", "rate": "14,934.5833", "description": "United States Dollar", "rate_float": 14934.5833}}}';
+  var url = Uri.parse('https://api.coindesk.com/v1/bpi/currentprice/usd.json');
+
+  // Use Mockito to return a successful response when it calls the
+  // provided http.Client.
+  when(client.get(url))
+      .thenAnswer((_) async => http.Response(fakeBitcoinAPIData, 200));
   group("Happy path", () {
-    test("usd_to_btc should return proper calculation", () {
-      var testConversion = ConversionTools.usd_to_btc('45987.90');
+    test("usd_to_btc should return proper calculation", () async {
+      CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+      expect(BTCRate, isA<CurrentBTCInUSD>());
+
+      expect(BTCRate.rateFloat, 14934.5833);
+
+      var testConversion =
+          ConversionTools.usd_to_btc('14934.5833', BTCRate.rateFloat);
       expect(testConversion, 1.0);
     });
 
-    test("btc_to_usd should return proper calculation", () {
-      var testConversion = ConversionTools.btc_to_usd('1');
-      expect(testConversion, 45987.9);
+    test("btc_to_usd should return proper calculation", () async {
+      CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+      expect(BTCRate, isA<CurrentBTCInUSD>());
+
+      expect(BTCRate.rateFloat, 14934.5833);
+      var testConversion = ConversionTools.btc_to_usd('1', BTCRate.rateFloat);
+      expect(testConversion, 14934.5833);
     });
 
     test(
         "btc_to_usd should return proper calculation with decimal input without leading digit",
-        () {
-      var testConversion = ConversionTools.btc_to_usd('.1');
-      expect(testConversion, 4598.79);
+        () async {
+      CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+      expect(BTCRate, isA<CurrentBTCInUSD>());
+
+      expect(BTCRate.rateFloat, 14934.5833);
+      var testConversion = ConversionTools.btc_to_usd('.1', BTCRate.rateFloat);
+      expect(testConversion, 1493.4583300000002);
     });
   });
 
   group("Sad path", () {
     group("usd_to_btc", () {
-      test("should return ArgumentError on empty string", () {
-        expect(() => ConversionTools.usd_to_btc(''), throwsArgumentError);
+      test("should return ArgumentError on empty string", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+        expect(() => ConversionTools.usd_to_btc('', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with a space", () {
-        expect(() => ConversionTools.usd_to_btc(' '), throwsArgumentError);
+      test("should return ArgumentError on string with a space", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+        expect(() => ConversionTools.usd_to_btc(' ', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with a '-'", () {
-        expect(() => ConversionTools.usd_to_btc('-'), throwsArgumentError);
+      test("should return ArgumentError on string with a '-'", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.usd_to_btc('-', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with invalid characters", () {
-        expect(
-            () => ConversionTools.usd_to_btc('%^vtjh,'), throwsArgumentError);
+      test("should return ArgumentError on string with invalid characters",
+          () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.usd_to_btc('%^vtjh,', BTCRate.rateFloat),
+            throwsArgumentError);
       });
 
-      test("should return ArgumentError on string with two decimals", () {
-        expect(
-            () => ConversionTools.usd_to_btc('0.012.0'), throwsArgumentError);
+      test("should return ArgumentError on string with two decimals", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.usd_to_btc('0.012.0', BTCRate.rateFloat),
+            throwsArgumentError);
       });
     });
 
     group("btc_to_usd", () {
-      test("should return ArgumentError on empty string", () {
-        expect(() => ConversionTools.btc_to_usd(''), throwsArgumentError);
+      test("should return ArgumentError on empty string", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.btc_to_usd('', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with a space", () {
-        expect(() => ConversionTools.btc_to_usd(' '), throwsArgumentError);
+      test("should return ArgumentError on string with a space", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.btc_to_usd(' ', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with a '-'", () {
-        expect(() => ConversionTools.btc_to_usd('-'), throwsArgumentError);
+      test("should return ArgumentError on string with a '-'", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.btc_to_usd('-', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with invalid characters", () {
-        expect(
-            () => ConversionTools.btc_to_usd('%^vtjh,'), throwsArgumentError);
+      test("should return ArgumentError on string with invalid characters",
+          () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.btc_to_usd('%^vtjh,', BTCRate.rateFloat),
+            throwsArgumentError);
       });
-      test("should return ArgumentError on string with two decimals", () {
-        expect(
-            () => ConversionTools.btc_to_usd('0.012.0'), throwsArgumentError);
+      test("should return ArgumentError on string with two decimals", () async {
+        CurrentBTCInUSD BTCRate = await BitcoinAPI.fetchCurrentBTCInUSD(client);
+
+        expect(BTCRate, isA<CurrentBTCInUSD>());
+
+        expect(BTCRate.rateFloat, 14934.5833);
+
+        expect(() => ConversionTools.btc_to_usd('0.012.0', BTCRate.rateFloat),
+            throwsArgumentError);
       });
     });
   });

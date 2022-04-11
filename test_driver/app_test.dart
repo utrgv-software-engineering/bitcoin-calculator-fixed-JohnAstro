@@ -22,7 +22,7 @@ void main() {
       When I tap "USD to BTC"
       And I enter "10000"
       And I tap "Continue"
-      Then I should see "10000 USD is equal to 0.21744850275833424 BTC"
+      Then I should see "10000 USD is equal to 0.669586810634 BTC"
     */
     test("should give conversion of USD to BTC", () async {
       final chooseConversionTextFinder =
@@ -54,9 +54,9 @@ void main() {
 
       // I should see the correct calculation
       final resultTextFinder =
-          find.text('10000 USD is equal to 0.21744850275833424 BTC');
+          find.text('10000 USD is equal to 0.6695868106343482 BTC');
       expect(await driver.getText(resultTextFinder),
-          '10000 USD is equal to 0.21744850275833424 BTC');
+          '10000 USD is equal to 0.6695868106343482 BTC');
 
       // Find and tap the done button and expect to be
       // in the choose conversion screen
@@ -71,7 +71,7 @@ void main() {
       When I tap "BTC to USD"
       And I enter "1.5"
       And I tap "Continue"
-      Then I should see "1.5 BTC is equal to 30658.600000000002 USD"
+      Then I should see "1.5 BTC is equal to 22401.87495 USD"
     */
     test("should give conversion of BTC to USD", () async {
       final chooseConversionTextFinder =
@@ -102,9 +102,9 @@ void main() {
       driver.tap(continueButtonFinder);
 
       // I should see the correct calculation
-      final resultTextFinder = find.text('1.5 BTC is equal to 68981.85 USD');
+      final resultTextFinder = find.text('1.5 BTC is equal to 22401.87495 USD');
       expect(await driver.getText(resultTextFinder),
-          '1.5 BTC is equal to 68981.85 USD');
+          '1.5 BTC is equal to 22401.87495 USD');
 
       // Find and tap the done button and expect to be
       // in the choose conversion screen

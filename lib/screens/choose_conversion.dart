@@ -48,21 +48,22 @@ class _ChooseConversionState extends State<ChooseConversion> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Input(usd_to_btc)));
               },
-              // ions in USD to BTC button
+              // Icons in USD to BTC button
               child: Ink(
                 decoration:
                     BoxDecoration(borderRadius: BorderRadius.circular(25)),
                 child: Container(
                     height: 50,
                     width: 250,
-                    alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.monetization_on_outlined,
-                          color: Colors.green,
-                          size: 50,
+                        Container(
+                          child: Icon(
+                            Icons.monetization_on_outlined,
+                            color: Colors.green,
+                            size: 50,
+                          ),
                         ),
                         Icon(
                           Icons.arrow_right_alt,
@@ -70,9 +71,9 @@ class _ChooseConversionState extends State<ChooseConversion> {
                           size: 50,
                         ),
                         Container(
-                          height: 50,
-                          width: 45,
+                          padding: EdgeInsets.all(4.0),
                           child: Image(
+                              width: 42,
                               color: Colors.amber,
                               image: AssetImage(
                                   "assets/bitcoin-icon-png-42924.png")),
@@ -103,14 +104,13 @@ class _ChooseConversionState extends State<ChooseConversion> {
                 child: Container(
                     height: 50,
                     width: 250,
-                    alignment: Alignment.center,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          height: 50,
-                          width: 45,
+                          padding: EdgeInsets.all(4.0),
                           child: Image(
+                              width: 42,
                               color: Colors.amber,
                               image: AssetImage(
                                   "assets/bitcoin-icon-png-42924.png")),

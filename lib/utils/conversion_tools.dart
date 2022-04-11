@@ -1,10 +1,10 @@
 class ConversionTools {
-  static double usd_to_btc(String usd) {
+  static double usd_to_btc(String usd, double currentBTCValue) {
     bool _validate = checkInvalidInput(usd);
 
     if (!_validate) {
       double usdnum = double.parse(usd);
-      double btc = 45987.90;
+      double btc = currentBTCValue;
 
       double result = usdnum / btc;
       return result;
@@ -13,12 +13,12 @@ class ConversionTools {
     }
   }
 
-  static double btc_to_usd(String btc) {
+  static double btc_to_usd(String btc, double currentBTCValue) {
     bool _validate = checkInvalidInput(btc);
 
     if (!_validate) {
       double btcnum = double.parse(btc);
-      double usd = 45987.90;
+      double usd = currentBTCValue;
 
       double result = usd * btcnum;
       return result;
