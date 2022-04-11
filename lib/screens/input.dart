@@ -1,7 +1,6 @@
 import 'package:bitcoin_calculator/screens/result.dart';
 import 'package:flutter/material.dart';
 import 'package:bitcoin_calculator/utils/conversion_tools.dart';
-import 'package:bitcoin_calculator/utils/current_bitcoin_rate.dart';
 import 'package:bitcoin_calculator/utils/bitcoin_api.dart';
 import 'package:bitcoin_calculator/config/globals.dart';
 
@@ -17,26 +16,15 @@ class _InputState extends State<Input> {
   final money = TextEditingController();
   bool validate = false;
   double result;
-  Future<CurrentBTCInUSD> futureRate;
-  double btcRate;
+  double futureRate;
 
   @override
   void initState() {
     super.initState();
-    futureRate = BitcoinAPI.fetchCurrentBTCInUSD(httpClient);
   }
 
-  double currentRateFetch() {
-    FutureBuilder<CurrentBTCInUSD>(
-        future: futureRate,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Text("${snapshot.data.rateFloat}");
-          } else if (snapshot.hasError) {
-            return Text('${snapshot.error}');
-          }
-          return const CircularProgressIndicator();
-        });
+  _fetchCurrentRate() async {
+    futureRate = await BitcoinAPI.fetchCurrentBTCInUSD(httpClient);
   }
 
   @override
@@ -59,24 +47,6 @@ class _InputState extends State<Input> {
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          FutureBuilder<CurrentBTCInUSD>(
-              future: futureRate,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  btcRate = snapshot.data.rateFloat;
-
-                  return Text(
-                    "${snapshot.data.rateFloat}",
-                    style: TextStyle(color: Colors.transparent),
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('${snapshot.error}');
-                }
-                return const Text(
-                  'Loading BTC Rate',
-                  style: TextStyle(color: Colors.transparent),
-                );
-              }),
           widget.usdToBtc
               ? Text(
                   "Enter USD to convert to BTC",
@@ -114,23 +84,24 @@ class _InputState extends State<Input> {
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(25))),
-                onPressed: () {
+                onPressed: () async {
+                  // Calls asyncronous function to fetch the current BTC rate
+                  // initializes currentRate to double futureRate
+                  await _fetchCurrentRate();
                   setState(() {
                     validate = ConversionTools.checkInvalidInput(money.text);
                     if (!validate) {
                       if (widget.usdToBtc) {
-                        double currentRate = currentRateFetch();
                         result =
-                            ConversionTools.usd_to_btc(money.text, btcRate);
+                            ConversionTools.usd_to_btc(money.text, futureRate);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Result(
                                     money.text, result, widget.usdToBtc)));
                       } else {
-                        double currentRate = currentRateFetch();
                         result =
-                            ConversionTools.btc_to_usd(money.text, btcRate);
+                            ConversionTools.btc_to_usd(money.text, futureRate);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
