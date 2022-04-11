@@ -1,7 +1,6 @@
 import 'package:bitcoin_calculator/screens/result.dart';
 import 'package:flutter/material.dart';
 import 'package:bitcoin_calculator/utils/conversion_tools.dart';
-import 'package:bitcoin_calculator/utils/current_bitcoin_rate.dart';
 import 'package:bitcoin_calculator/utils/bitcoin_api.dart';
 import 'package:bitcoin_calculator/config/globals.dart';
 
