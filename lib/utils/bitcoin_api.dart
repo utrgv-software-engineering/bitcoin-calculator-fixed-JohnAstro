@@ -9,11 +9,8 @@ class BitcoinAPI {
     final response = await client.get(url);
     Map<String, dynamic> json = jsonDecode(response.body);
 
-    CurrentBTCInUSD currentRate =
-        CurrentBTCInUSD(rateFloat: json['bpi']['USD']['rate_float']);
-
     if (response.statusCode == 200) {
-      return currentRate.rateFloat;
+      return CurrentBTCInUSD.fromJson(json).rateFloat;
     } else {
       throw Exception('Failed to load current price of BTC in USD');
     }
